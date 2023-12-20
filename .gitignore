@@ -1,4 +1,4 @@
-# __pycache__/
+__pycache__/
 dataset/*/output
 Previous_patchmap000.png
 Previous_patchmap001.png
