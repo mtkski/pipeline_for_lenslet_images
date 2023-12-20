@@ -84,13 +84,13 @@ def distFromCenterXringYborderLogScale(rad,ring, border):
 
     return patch_mask
 
-def make_preprocessing(config_dico, output_file_name):
+def make_preprocessing(config_dico, output_filename):
     calibFile = config_dico['camera_calibration_file']
     offset, lens, alpha, Lens_base_Yx, Lens_base_Yy = xml_reader(calibFile)
 
     # Read input image
 
-    raw_image = Image.open(config_dico['file_name_rgb_in'])
+    raw_image = Image.open(config_dico['filename_rgb_in'])
     image_rgb = raw_image.convert('RGB')
 
 
@@ -225,7 +225,7 @@ def make_preprocessing(config_dico, output_file_name):
     # final = np.transpose(GD, (1,0,2))
     img = Image.fromarray(final, 'RGB')
     # img.save(f'blurredRad{rad}Sig{sig}.png')
-    img.save(output_file_name)
+    img.save(output_filename)
 
 
 if __name__ == '__main__':
@@ -241,12 +241,12 @@ if __name__ == '__main__':
     
     if config_file is None:
         config_dico = {}
-        config_dico['file_name_rgb_in'] = input_file
-        # config_dico['filename_no_ext'] = config_dico['file_name_rgb_in'].split('.')[0]
+        config_dico['filename_rgb_in'] = input_file
+        # config_dico['filename_no_ext'] = config_dico['filename_rgb_in'].split('.')[0]
         config_dico['filename_no_ext'] = 'ornito01'
 
-        # config_dico['file_name_rgb_in'] = "img01.png"
-        # config_dico['file_name_rgb_in'] = "origami01.png"
+        # config_dico['filename_rgb_in'] = "img01.png"
+        # config_dico['filename_rgb_in'] = "origami01.png"
         
         config_dico['output_path'] = "./"
 
