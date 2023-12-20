@@ -11,7 +11,7 @@ def get_config_dict(filename):
             dico['cut_off'] = int(config['PRE_PROCESSING']['cut_off']) # à check si c'est bien un int
             dico['rad'] = int(config['PRE_PROCESSING']['rad'])
             dico['border'] = int(config['PRE_PROCESSING']['border'])
-            dico['testReBlur'] = bool(config['PRE_PROCESSING']['testReBlur'])
+            dico['testReBlur'] = config['PRE_PROCESSING']['testReBlur'].lower()
             dico['ring'] = int(config['PRE_PROCESSING']['ring'])
 
             # ______________ DEFAULT ______________
@@ -43,7 +43,8 @@ def get_config_dict(filename):
             dico['generate_rlc_cfg'] = config['RLC']['generate_rlc_cfg'].lower()
             dico['rlc_cfg_template'] = config['RLC']['rlc_cfg_template']
             dico['RLC_ref_path'] = config['RLC']['RLC_ref_path']
-            dico['RLC_processed_path'] = config['RLC']['RLC_processed_path']
+            dico['RLC_no_preproc_path'] = config['RLC']['RLC_no_preproc_path']
+            dico['RLC_preproc_path'] = config['RLC']['RLC_preproc_path']
 
             # ______________ PSNR ______________
             dico['psnr_path'] = config['PSNR']['psnr_path']

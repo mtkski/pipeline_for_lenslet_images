@@ -86,10 +86,16 @@ def distFromCenterXringYborderLogScale(rad,ring, border):
 
 def make_preprocessing(config_dico, output_filename):
     calibFile = config_dico['camera_calibration_file']
+    rad = config_dico['rad']
+    diam = 2*rad + 1
+    ring = config_dico['ring']
+    border = config_dico['border']
+    sig = [config_dico['sigma']]
+    cut_off = [config_dico['cut_off']]
+    testReBlur = config_dico['testReBlur']
     offset, lens, alpha, Lens_base_Yx, Lens_base_Yy = xml_reader(calibFile)
 
     # Read input image
-
     raw_image = Image.open(config_dico['filename_rgb_in'])
     image_rgb = raw_image.convert('RGB')
 
@@ -102,12 +108,6 @@ def make_preprocessing(config_dico, output_filename):
 
     w_im = raw_image.width
     h_im = raw_image.height
-
-    rad = config_dico['rad']
-    diam = 2*rad + 1
-
-    ring = config_dico['ring']
-    border = config_dico['border']
 
 
 
@@ -192,20 +192,16 @@ def make_preprocessing(config_dico, output_filename):
 
     img_array = np.asarray(image_rgb)
 
-    sig = [config_dico['sigma']]         #sigma = force du gaussien
-    cut_off = [config_dico['cut_off']]       #tjrs mettre 
-
     for c in cut_off:
         mask_c = mask < c
-        mask_name = f"{config_dico['output_path']}mask_circleRad{rad}Ring{ring}Bord{border}CutOff{c}.png"
+        mask_name = f"{config_dico['pre_processed_output_path']}mask_circleRad{rad}Ring{ring}Bord{border}CutOff{c}.png"
         imsave(mask_name,mask_c)
 
     out_partial_blurr = img_array.copy()
     temp = img_array.copy()
 
-    testReBlur = config_dico['testReBlur']
 
-    if testReBlur :
+    if testReBlur == 'true' :
         for i in range(len(sig)):
             temp[:, :, 0] = gaussian_filter(temp[:, :, 0], sig[i])
             temp[:, :, 1] = gaussian_filter(temp[:, :, 1], sig[i])
@@ -231,27 +227,26 @@ def make_preprocessing(config_dico, output_filename):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-cfg', help='Path to the config file')
-    parser.add_argument('-o', help='Output file name')
+    parser.add_argument('-o', help='Output path name')
     parser.add_argument('-i', help='Input file name')
     args = parser.parse_args()
 
     input_file = args.i
     config_file = args.cfg
-    output_file = args.o
+    output_path_name = args.o
     
     if config_file is None:
         config_dico = {}
-        config_dico['filename_rgb_in'] = input_file
-        # config_dico['filename_no_ext'] = config_dico['filename_rgb_in'].split('.')[0]
-        config_dico['filename_no_ext'] = 'ornito01'
+        config_dico['filename_rgb_in'] = "origami01.png"
 
         # config_dico['filename_rgb_in'] = "img01.png"
-        # config_dico['filename_rgb_in'] = "origami01.png"
+        # config_dico['filename_rgb_in'] = "origami.png"
         
         config_dico['output_path'] = "./"
+        config_dico['pre_processed_output_path'] = config_dico['output_path'] # besoin d'écrire ça pour que ça marche avec le pipeline
 
-        # config_dico['camera_calibration_file'] = "CalibData_DenseLightField_Nagoya.xml"
-        config_dico['camera_calibration_file'] = "dataset/Ornito/R5_calib.xml"
+        config_dico['camera_calibration_file'] = "CalibData_DenseLightField_Nagoya.xml"
+        # config_dico['camera_calibration_file'] = "dataset/Ornito/R5_calib.xml"
         # config_dico['camera_calibration_file'] = "CalibData_Modif.xml"
 
         config_dico['testReBlur'] = False
@@ -261,13 +256,14 @@ if __name__ == '__main__':
         config_dico['sigma'] = 2.0
         config_dico['cut_off'] = 250
 
-        if config_dico['testReBlur'] :
-            output_name = f"{config_dico['output_path']}{config_dico['filename_no_ext']}{config_dico['rad']}Ring{config_dico['ring']}Bord{config_dico['border']}Sig{int(config_dico['sigma'])}CutOff{config_dico['cut_off']}_TestReBlur.png"
+        if config_dico['testReBlur'] == True :
+            output_name = f"{config_dico['output_path']}{config_dico['filename_rgb_in'].split('.')[0]}{config_dico['rad']}Ring{config_dico['ring']}Bord{config_dico['border']}Sig{int(config_dico['sigma'])}CutOff{config_dico['cut_off']}_TestReBlur.png"
         else :
-            output_name = f"{config_dico['output_path']}{config_dico['filename_no_ext']}{config_dico['rad']}Ring{config_dico['ring']}Bord{config_dico['border']}Sig{int(config_dico['sigma'])}CutOff{config_dico['cut_off']}.png"
+            output_name = f"{config_dico['output_path']}{config_dico['filename_rgb_in'].split('.')[0]}{config_dico['rad']}Ring{config_dico['ring']}Bord{config_dico['border']}Sig{int(config_dico['sigma'])}CutOff{config_dico['cut_off']}.png"
     
     else :
         config_dico = get_config_dict(config_file)
-        output_name = output_file
+        config_dico['pre_processed_output_path'] = config_dico['output_path'] + "pre_processing_line/"
+        output_name = output_path_name
 
     make_preprocessing(config_dico, output_name)
