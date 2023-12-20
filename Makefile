@@ -4,3 +4,4 @@ ornito :
 clean :
 	rm -rf dataset/*/output/*
 	rm -rf dataset/*/RLC_config.cfg
+	rm -rf dataset/*/rlc_preprocessed/*

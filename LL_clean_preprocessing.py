@@ -85,7 +85,6 @@ def distFromCenterXringYborderLogScale(rad,ring, border):
     return patch_mask
 
 def make_preprocessing(config_dico, output_file_name):
-
     calibFile = config_dico['camera_calibration_file']
     offset, lens, alpha, Lens_base_Yx, Lens_base_Yy = xml_reader(calibFile)
 
@@ -193,11 +192,10 @@ def make_preprocessing(config_dico, output_file_name):
 
     img_array = np.asarray(image_rgb)
 
-    sig = config_dico['sigma']         #sigma = force du gaussien
-    cut_off = config_dico['cut_off']       #tjrs mettre 
+    sig = [config_dico['sigma']]         #sigma = force du gaussien
+    cut_off = [config_dico['cut_off']]       #tjrs mettre 
 
     for c in cut_off:
-        print(c)
         mask_c = mask < c
         mask_name = f"{config_dico['output_path']}mask_circleRad{rad}Ring{ring}Bord{border}CutOff{c}.png"
         imsave(mask_name,mask_c)
@@ -244,6 +242,9 @@ if __name__ == '__main__':
     if config_file is None:
         config_dico = {}
         config_dico['file_name_rgb_in'] = input_file
+        # config_dico['filename_no_ext'] = config_dico['file_name_rgb_in'].split('.')[0]
+        config_dico['filename_no_ext'] = 'ornito01'
+
         # config_dico['file_name_rgb_in'] = "img01.png"
         # config_dico['file_name_rgb_in'] = "origami01.png"
         
@@ -257,16 +258,16 @@ if __name__ == '__main__':
         config_dico['rad'] = 11
         config_dico['ring'] = 3
         config_dico['border'] = 1
-        config_dico['sigma'] = [2.0]
-        config_dico['cut_off'] = [250, 100, 20, 500]
+        config_dico['sigma'] = 2.0
+        config_dico['cut_off'] = 250
 
         if config_dico['testReBlur'] :
-            output_name = f"{config_dico['output_path']}{config_dico['file_name_rgb_in']}{config_dico['rad']}Ring{config_dico['ring']}Bord{config_dico['border']}Sig{config_dico['sigma']}CutOff{config_dico['cut_off']}_TestReBlur.png"
+            output_name = f"{config_dico['output_path']}{config_dico['filename_no_ext']}{config_dico['rad']}Ring{config_dico['ring']}Bord{config_dico['border']}Sig{int(config_dico['sigma'])}CutOff{config_dico['cut_off']}_TestReBlur.png"
         else :
-            output_name = f"{config_dico['output_path']}{config_dico['file_name_rgb_in']}{config_dico['rad']}Ring{config_dico['ring']}Bord{config_dico['border']}Sig{config_dico['sigma']}CutOff{config_dico['cut_off']}.png"
+            output_name = f"{config_dico['output_path']}{config_dico['filename_no_ext']}{config_dico['rad']}Ring{config_dico['ring']}Bord{config_dico['border']}Sig{int(config_dico['sigma'])}CutOff{config_dico['cut_off']}.png"
     
     else :
         config_dico = get_config_dict(config_file)
         output_name = output_file
 
-    make_preprocessing(config_dico, output_file)
+    make_preprocessing(config_dico, output_name)
