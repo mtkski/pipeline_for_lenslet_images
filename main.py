@@ -21,14 +21,15 @@ def get_config_dict(filename):
             dico['height'] = config['DEFAULT']['height']
             dico['filename_yuv'] = dico['output_path'] + config['DEFAULT']['file_name']  + ".yuv" #config['DEFAULT']['filename_yuv']
             dico['filename_rgb_out'] = dico['output_path'] + "rgb_out_" + config['DEFAULT']['file_name']
-            dico['pix_fmt'] = config['DEFAULT']['pix_fmt']
+            # dico['pix_fmt'] = config['DEFAULT']['pix_fmt']
             dico['vtm_path'] = config['APP_PATHS']['vtm_path']
-            dico['vtm_config_file'] = config['DEFAULT']['vtm_config_file']
+            dico['vtm_config_file'] = config['VTM']['vtm_config_file']
             dico['pre_processing_path'] = config['APP_PATHS']['pre_processing_path']
             dico['RLC_path'] = config['APP_PATHS']['RLC_path']
             dico['RLC_config_file'] = config['RLC']['RLC_config_file']
             dico['camera_calibration_file'] = config['RLC']['camera_calibration_file']
-            
+            dico['generate_rlc_cfg'] = config['RLC']['generate_rlc_cfg']
+
             return dico
     except FileNotFoundError:
         print(f"File '{filename}' not found.")
@@ -39,10 +40,9 @@ def generate_RLC_config(template_file, output_file):
     with open(template_file, 'r') as file:
         filedata = file.read()
 
-    # Replace the target string
     filedata = filedata.replace('_CALIBRATIONFILE', config_dico['camera_calibration_file'])
     filedata = filedata.replace('_INPUTPATH', config_dico['filename_rgb_out'])
-    filedata = filedata.replace('_OUTPUTPATH', config_dico['output_path']+"RCL_result")
+    filedata = filedata.replace('_OUTPUTPATH', config_dico['output_path']+"RLC_result")
     filedata = filedata.replace('_WIDTH', config_dico['width'])
     filedata = filedata.replace('_HEIGHT', config_dico['height'])
     # TODO faire start frame et end frame
@@ -54,7 +54,7 @@ def generate_RLC_config(template_file, output_file):
 if __name__ == '__main__':
     start_time = time.time()
     if len(sys.argv) != 2:
-        print("Usage: python Main.py <config_file>")
+        print("Usage: python Main.py <pipeline_config_file>")
         exit(1)
 
     filename = sys.argv[1]
@@ -80,16 +80,20 @@ if __name__ == '__main__':
     # ______________ RLC ______________
     # RLC_command = f"{config_dico['RLC_path']} {config_dico['RLC_config_file']}"
 
-    RLC_config_generated = f"{config_dico['dataset_path']}RLC_config.cfg"
-    generate_RLC_config("RLC_config_template.cfg", RLC_config_generated)
-    RLC_command = f"{config_dico['RLC_path']} {RLC_config_generated}"
+    if (config_dico['generate_rlc_cfg'] == 'true') :
+        RLC_config = f"{config_dico['dataset_path']}RLC_config.cfg"
+        generate_RLC_config("RLC_config_template.cfg", RLC_config)
+
+    else : RLC_config = config_dico['RLC_config_file']
+
+    RLC_command = f"{config_dico['RLC_path']} {RLC_config}"
     print(RLC_command)
 
     # ______________ Execution ______________
-    subprocess.run(pre_process_command, shell=True)
-    subprocess.run(ffmpeg_command, shell=True)
-    subprocess.run(vtm_command, shell=True)
-    subprocess.run(ffmpeg_command2, shell=True)
+    # subprocess.run(pre_process_command, shell=True)
+    # subprocess.run(ffmpeg_command, shell=True)
+    # subprocess.run(vtm_command, shell=True)
+    # subprocess.run(ffmpeg_command2, shell=True)
     subprocess.run(RLC_command, shell=True)
     
     end_time = time.time()
