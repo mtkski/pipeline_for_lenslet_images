@@ -29,6 +29,7 @@ def get_config_dict(filename):
             dico['RLC_config_file'] = config['RLC']['RLC_config_file']
             dico['camera_calibration_file'] = config['RLC']['camera_calibration_file']
             dico['generate_rlc_cfg'] = config['RLC']['generate_rlc_cfg']
+            dico['rlc_cfg_template'] = config['RLC']['rlc_cfg_template']
 
             return dico
     except FileNotFoundError:
@@ -82,7 +83,7 @@ if __name__ == '__main__':
 
     if (config_dico['generate_rlc_cfg'] == 'true') :
         RLC_config = f"{config_dico['dataset_path']}RLC_config.cfg"
-        generate_RLC_config("RLC_config_template.cfg", RLC_config)
+        generate_RLC_config(config_dico['rlc_cfg_template'], RLC_config)
 
     else : RLC_config = config_dico['RLC_config_file']
 
@@ -90,10 +91,10 @@ if __name__ == '__main__':
     print(RLC_command)
 
     # ______________ Execution ______________
-    # subprocess.run(pre_process_command, shell=True)
-    # subprocess.run(ffmpeg_command, shell=True)
-    # subprocess.run(vtm_command, shell=True)
-    # subprocess.run(ffmpeg_command2, shell=True)
+    subprocess.run(pre_process_command, shell=True)
+    subprocess.run(ffmpeg_command, shell=True)
+    subprocess.run(vtm_command, shell=True)
+    subprocess.run(ffmpeg_command2, shell=True)
     subprocess.run(RLC_command, shell=True)
     
     end_time = time.time()
