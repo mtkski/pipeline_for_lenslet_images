@@ -10,7 +10,10 @@ The pipeline config file has all the information needed to process an image. An 
 
 ## Execution of the pipeline
 ![](doc/pipeline_schema.png)
-Three RLC output directories must be created before running, one for the reference mutliview (middle line), one for the preprocessed image (top line), one for the image without preprocessing (bottom line). They have to be specified in the pieline general config file. 
+To run the pipeline, just specify the config file. A template config file is provided at ```cfg_templates/pipeline_config_template.cfg```.
+An output directory is generated at the begining.
+
+#### Example : ```python3 main.py dataset/Ornito/pipeline_config_Ornito.cfg```
 
 After the 3 lines finished running, the psnr score is computed and output in a .txt file. 
 
@@ -23,6 +26,7 @@ __LL_clean_preprocessing.py__ : a python script used to preprocess the lenslet i
 - -i = the input file
 - -cfg = the general pipeline config file
 - -o = outputname
+
 The script can be runned with hard-coded parameters with just ```python3 LL_clean_preprocessing.py```. This will bypass the use of the config file (a smaller config_dico will still be created).
 
 ### PSNR score

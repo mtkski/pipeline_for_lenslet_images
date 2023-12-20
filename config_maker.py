@@ -42,9 +42,14 @@ def get_config_dict(filename):
             dico['camera_calibration_file'] = config['RLC']['camera_calibration_file']
             dico['generate_rlc_cfg'] = config['RLC']['generate_rlc_cfg'].lower()
             dico['rlc_cfg_template'] = config['RLC']['rlc_cfg_template']
-            dico['RLC_ref_path'] = config['RLC']['RLC_ref_path']
-            dico['RLC_no_preproc_path'] = config['RLC']['RLC_no_preproc_path']
-            dico['RLC_preproc_path'] = config['RLC']['RLC_preproc_path']
+                # Directories for files created while running the script
+            dico['no_preproc_line'] = dico['output_path'] + "no_preproc_line/"
+            dico['preproc_line'] = dico['output_path'] + "preproc_line/"
+            dico['ref_rlc_line'] = dico['output_path'] + "ref_rlc_line/"
+                # Output directories for RLC multiview images 
+            dico['RLC_ref_path'] = dico['output_path'] + "ref_rlc_multiview/"
+            dico['RLC_no_preproc_path'] = dico['output_path'] + "no_preproc_rlc_multiview/"
+            dico['RLC_preproc_path'] = dico['output_path'] + "preproc_rlc_multiview/"
 
             # ______________ PSNR ______________
             dico['psnr_path'] = config['PSNR']['psnr_path']

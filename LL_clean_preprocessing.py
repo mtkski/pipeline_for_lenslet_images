@@ -194,7 +194,7 @@ def make_preprocessing(config_dico, output_filename):
 
     for c in cut_off:
         mask_c = mask < c
-        mask_name = f"{config_dico['pre_processed_output_path']}mask_circleRad{rad}Ring{ring}Bord{border}CutOff{c}.png"
+        mask_name = f"{config_dico['preproc_line']}mask_circleRad{rad}Ring{ring}Bord{border}CutOff{c}.png"
         imsave(mask_name,mask_c)
 
     out_partial_blurr = img_array.copy()
@@ -243,7 +243,7 @@ if __name__ == '__main__':
         # config_dico['filename_rgb_in'] = "origami.png"
         
         config_dico['output_path'] = "./"
-        config_dico['pre_processed_output_path'] = config_dico['output_path'] # besoin d'écrire ça pour que ça marche avec le pipeline
+        config_dico['preproc_line'] = config_dico['output_path'] # besoin d'écrire ça pour que ça marche avec le pipeline
 
         config_dico['camera_calibration_file'] = "CalibData_DenseLightField_Nagoya.xml"
         # config_dico['camera_calibration_file'] = "dataset/Ornito/R5_calib.xml"
@@ -263,7 +263,6 @@ if __name__ == '__main__':
     
     else :
         config_dico = get_config_dict(config_file)
-        config_dico['pre_processed_output_path'] = config_dico['output_path'] + "pre_processing_line/"
         output_name = output_path_name
 
     make_preprocessing(config_dico, output_name)
