@@ -73,4 +73,4 @@ These are the parameters :
 - width
 - TODO start_frame, end_frame
 
-To change the other parameters, directly change the values in the template file, as they will be used to generate the correct RLC config file.
+To change the other parameters, directly change the values in the template file, as they will be used to generate the correct RLC config file. 
