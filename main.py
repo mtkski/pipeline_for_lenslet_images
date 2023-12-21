@@ -56,7 +56,7 @@ def pre_processing_line(config_dico):
     # ______________ VTM ______________
     # WATCHOUT vtm only takes yuv420p and outputs only yuv420p10le
     vtm_output = f"{config_dico['preproc_line']}vtm_out_qp{config_dico['qp']}.yuv"
-    vtm_command = f"{config_dico['vtm_path']}EncoderApp -i {config_dico['filename_yuv']} -q {config_dico['qp']} -wdt {config_dico['width']} -hgt {config_dico['height']} -c {config_dico['vtm_config_file']} -f {config_dico['frames_to_convert']} -fr {config_dico['framerate']} -o {vtm_output}"
+    vtm_command = f"{config_dico['vtm_path']}EncoderApp -i {config_dico['filename_yuv']} -q {config_dico['qp']} -wdt {config_dico['width']} -hgt {config_dico['height']} -c {config_dico['vtm_config_file']} -f {config_dico['frames_to_convert']} -fr {config_dico['framerate']} -o {vtm_output} > {config_dico['preproc_line']}vtm_out_qp{config_dico['qp']}.txt"
     print(vtm_command)
     print("______________________________________")
 
@@ -107,7 +107,7 @@ def no_pre_processing_line(config_dico):
     # ______________ VTM ______________
     # WATCHOUT vtm only takes yuv420p and outputs only yuv420p10le
     vtm_output = f"{config_dico['no_preproc_line']}vtm_out_qp{config_dico['qp']}.yuv"
-    vtm_command = f"{config_dico['vtm_path']}EncoderApp -i {config_dico['filename_yuv']} -q {config_dico['qp']} -wdt {config_dico['width']} -hgt {config_dico['height']} -c {config_dico['vtm_config_file']} -f {config_dico['frames_to_convert']} -fr {config_dico['framerate']} -o {vtm_output}"
+    vtm_command = f"{config_dico['vtm_path']}EncoderApp -i {config_dico['filename_yuv']} -q {config_dico['qp']} -wdt {config_dico['width']} -hgt {config_dico['height']} -c {config_dico['vtm_config_file']} -f {config_dico['frames_to_convert']} -fr {config_dico['framerate']} -o {vtm_output} > {config_dico['no_preproc_line']}vtm_out_qp{config_dico['qp']}.txt"
     print(vtm_command)
     print("______________________________________")
 
