@@ -13,24 +13,22 @@ def get_config_dict(filename):
             dico['border'] = int(config['PRE_PROCESSING']['border'])
             dico['testReBlur'] = config['PRE_PROCESSING']['testReBlur'].lower()
             dico['ring'] = int(config['PRE_PROCESSING']['ring'])
+            dico['frames_to_convert'] = config['DEFAULT']['frames_to_convert']
 
             # ______________ DEFAULT ______________
-            dico['dataset_path'] = config['DEFAULT']['dataset_path']
+            dico['dataset_path'] = str(config['DEFAULT']['dataset_path'])
             dico['output_path'] = config['DEFAULT']['output_path']
-            dico['filename'] = config['DEFAULT']['filename']
-            dico['filename_no_ext'] = dico['filename'].split('.')[0]
-            dico['filename_rgb_in'] = dico['dataset_path'] + config['DEFAULT']['filename']
+
             dico['framerate'] = config['DEFAULT']['framerate']
-            dico['frames_to_convert'] = config['DEFAULT']['frames_to_convert']
             dico['width'] = config['DEFAULT']['width']
             dico['height'] = config['DEFAULT']['height']
-            dico['filename_yuv'] = dico['output_path'] + config['DEFAULT']['filename'].split('.')[0] + ".yuv"
+            # dico['filename_yuv'] = dico['output_path'] + config['DEFAULT']['filename'].split('.')[0] + ".yuv"
             # dico['pix_fmt'] = config['DEFAULT']['pix_fmt']
-                        
+
             # ______________ VTM ______________
             dico['vtm_config_file'] = config['VTM']['vtm_config_file']
             dico['qp'] = config['VTM']['qp']
-            dico['filename_rgb_out'] = dico['output_path'] + "qp_"+dico['qp'] + "_" +config['DEFAULT']['filename'] #here it's for the output of ffmpeg2  
+            # dico['filename_rgb_out'] = dico['output_path'] + "qp_"+dico['qp'] + "_" +config['DEFAULT']['filename'] #here it's for the output of ffmpeg2  
 
             # ______________ APP PATHS ______________
             dico['vtm_path'] = config['APP_PATHS']['vtm_path']
@@ -58,4 +56,4 @@ def get_config_dict(filename):
     except FileNotFoundError:
         print(f"File '{filename}' not found.")
     except:
-        print("An error occurred while opening the file.")
+        print("An error occurred while opening the file. No config 4 u")

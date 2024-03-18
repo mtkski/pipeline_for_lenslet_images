@@ -11,21 +11,24 @@ def create_output_dirs(config_dico):
     os.makedirs(config_dico['preproc_line'], exist_ok=True)
     os.makedirs(config_dico['ref_rlc_line'], exist_ok=True)
 
+
     os.makedirs(config_dico['RLC_ref_path'], exist_ok=True)
     os.makedirs(config_dico['RLC_no_preproc_path'], exist_ok=True)
     os.makedirs(config_dico['RLC_preproc_path'], exist_ok=True)
 
 
-def generate_RLC_config(template_file, output_file, calib, input_path, output_path, width, height):
+def generate_RLC_config(template_file, output_file, calib, input_path, output_path, width, height, frames_to_convert):
+    # dico['filename_rgb_in'] = dico['dataset_path'] + config['DEFAULT']['filename']
+
     try:
         with open(template_file, 'r') as file:
             filedata = file.read()
-
         filedata = filedata.replace('_CALIBRATIONFILE', calib)
         filedata = filedata.replace('_INPUTPATH', input_path)
-        filedata = filedata.replace('_OUTPUTPATH', output_path)
+        filedata = filedata.replace('_OUTPUTPATH', output_path+"Res_%03d")
         filedata = filedata.replace('_WIDTH', width)
         filedata = filedata.replace('_HEIGHT', height)
+        filedata = filedata.replace('_ENDFRAME', frames_to_convert)
         # TODO: Add start frame and end frame replacements
 
         with open(output_file, 'w') as file:   
@@ -69,7 +72,7 @@ def pre_processing_line(config_dico):
     # ______________ RLC ______________
     if (config_dico['generate_rlc_cfg'] == 'true') :
         RLC_config_name = f"{config_dico['preproc_line']}RLC_config.cfg"
-        generate_RLC_config(config_dico['rlc_cfg_template'], RLC_config_name, config_dico['camera_calibration_file'], config_dico['filename_rgb_out'], config_dico['RLC_preproc_path']+"qp"+config_dico['qp'], config_dico['width'], config_dico['height'])
+        generate_RLC_config(config_dico['rlc_cfg_template'], RLC_config_name, config_dico['camera_calibration_file'], config_dico['filename_rgb_out'], config_dico['RLC_preproc_path']+"qp"+config_dico['qp'], config_dico['width'], config_dico['height'], config_dico['frames_to_convert'])
     else : RLC_config_name = config_dico['RLC_config_file']
 
     RLC_command = f"{config_dico['RLC_path']} {RLC_config_name}"
@@ -87,7 +90,7 @@ def rlc_line(config_dico):    #CHOISIR NOM POUR PSNR, ICI C'EST LA REF
     # ______________ RLC ______________
     if (config_dico['generate_rlc_cfg'] == 'true') :                                                                    
         ref_RLC_config_name = f"{config_dico['ref_rlc_line']}RLC_config.cfg"
-        generate_RLC_config(config_dico['rlc_cfg_template'], ref_RLC_config_name, config_dico['camera_calibration_file'], config_dico['filename_rgb_in'], config_dico['RLC_ref_path'], config_dico['width'], config_dico['height'])
+        generate_RLC_config(config_dico['rlc_cfg_template'], ref_RLC_config_name, config_dico['camera_calibration_file'], config_dico['dataset_path'], config_dico['RLC_ref_path'], config_dico['width'], config_dico['height'], config_dico['frames_to_convert'])
     else : ref_RLC_config_name = config_dico['RLC_config_file']
 
     RLC_command = f"{config_dico['RLC_path']} {ref_RLC_config_name}"
@@ -120,7 +123,7 @@ def no_pre_processing_line(config_dico):
     # ______________ RLC ______________
     if (config_dico['generate_rlc_cfg'] == 'true') :
         proc_RLC_config_name = f"{config_dico['no_preproc_line']}RLC_config.cfg"
-        generate_RLC_config(config_dico['rlc_cfg_template'], proc_RLC_config_name, config_dico['camera_calibration_file'], config_dico['filename_rgb_out'], config_dico['RLC_no_preproc_path']+"qp"+config_dico['qp'], config_dico['width'], config_dico['height'])
+        generate_RLC_config(config_dico['rlc_cfg_template'], proc_RLC_config_name, config_dico['camera_calibration_file'], config_dico['filename_rgb_out'], config_dico['RLC_no_preproc_path']+"qp"+config_dico['qp'], config_dico['width'], config_dico['height'], config_dico['frames_to_convert'])
     else : proc_RLC_config_name = config_dico['RLC_config_file']
 
     RLC_command = f"{config_dico['RLC_path']} {proc_RLC_config_name}"
@@ -132,7 +135,7 @@ def no_pre_processing_line(config_dico):
     subprocess.run(vtm_command, shell=True)
     subprocess.run(ffmpeg_command2, shell=True)
     subprocess.run(RLC_command,shell=True)
-                   
+
 
 if __name__ == '__main__':
     start_time = time.time()
@@ -143,25 +146,26 @@ if __name__ == '__main__':
     config_filename = sys.argv[1]
     config_dico = get_config_dict(config_filename)
     create_output_dirs(config_dico)
-    
+    print(config_dico)
     # ______________ Just RLC (ref) ______________
     rlc_line(config_dico)
-
+    
     # __________________Pre processing_____________
-    pre_processing_line(config_dico)
+    # pre_processing_line(config_dico)
 
     # ______________ No pre processing ______________
-    no_pre_processing_line(config_dico)
+    # no_pre_processing_line(config_dico)
 
     # ______________ PSNR ______________
-    psnr_command_no_preproc = f"python3 {config_dico['psnr_path']} -ref {config_dico['RLC_ref_path']} -i {config_dico['RLC_no_preproc_path']} -o {config_dico['RLC_no_preproc_path']} -cfg {config_filename} -name no_pre_proc"
-    psnr_command_preproc = f"python3 {config_dico['psnr_path']} -ref {config_dico['RLC_ref_path']} -i {config_dico['RLC_preproc_path']} -o {config_dico['RLC_preproc_path']} -cfg {config_filename} -name pre_proc"
+    # psnr_command_no_preproc = f"python3 {config_dico['psnr_path']} -ref {config_dico['RLC_ref_path']} -i {config_dico['RLC_no_preproc_path']} -o {config_dico['RLC_no_preproc_path']} -cfg {config_filename} -name no_pre_proc"
+    # psnr_command_preproc = f"python3 {config_dico['psnr_path']} -ref {config_dico['RLC_ref_path']} -i {config_dico['RLC_preproc_path']} -o {config_dico['RLC_preproc_path']} -cfg {config_filename} -name pre_proc"
 
-    print(psnr_command_no_preproc)
-    print(psnr_command_preproc)
-    subprocess.run(psnr_command_no_preproc, shell=True)
-    subprocess.run(psnr_command_preproc, shell=True)
+    # print(psnr_command_no_preproc)
+    # print(psnr_command_preproc)
+    # subprocess.run(psnr_command_no_preproc, shell=True)
+    # subprocess.run(psnr_command_preproc, shell=True)
 
     end_time = time.time()
     print(f"Execution time: {end_time - start_time} seconds")
     print(f"Execution time: {(end_time - start_time)/60} minutes")
+    
