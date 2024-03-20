@@ -56,13 +56,15 @@ def calc_psnr(config_dico, ref_images_path, images_path, output_path_name, name)
             # path_rad = path+"Rad_{:d}/Ring3_Bord1/Sig0.8_0.8_0.8_0.8_CutOff250_191_127_120/fujita/".format(r)
             # path_rad = path+"Rad_{:d}/Sig0.8_0.8_0.8/fujita9/".format(r)
             # path_rad = path+"Rad{:d}/s2.0-2.5_c250-49/recon/origami/QP{:d}/".format(r, qp)
-            path_rad = images_path+ f"qp{qp}/"
+            path_rad = images_path
             # path_rad = path+"Rad_{:d}/Sig0.8_2.0_2.8/fujita2/".format(r)
 
             
             for i in range(1, num+1):
                 ref = cv2.imread(ref_images_path+"image_{:03d}.png".format(i))
+                print(ref)
                 img = cv2.imread(path_rad+"image_{:03d}.png".format(i))
+                print(img)
                 #psnr
                 # psnr = cv2.PSNR(ref, img)
                 psnr = psnr_percent(ref, img,1) #0.98 -> 96%
@@ -79,7 +81,7 @@ def calc_psnr(config_dico, ref_images_path, images_path, output_path_name, name)
 
         # print(f"rad : {r} - PSNR ",np.round(Table_psnr,2))
         # print(f"rad : {r} - SSIM ",np.round(Table_ssim,4))
-        output_path_name = f"{output_path_name}psnr_{name}_qp{config_dico['qp']}.txt"
+        output_path_name = f"{output_path_name}psnr_{name}.txt"
         with open(output_path_name, 'w') as file:
             file.write(f"rad : {r} - PSNR {np.round(Table_psnr,2)}\n")
             file.write(f"rad : {r} - SSIM {np.round(Table_ssim,4)}\n")
@@ -90,14 +92,13 @@ def calc_psnr(config_dico, ref_images_path, images_path, output_path_name, name)
 if __name__ == "__main__":
     print("___________________PSNR___________________")
     parser = argparse.ArgumentParser()
-    parser.add_argument('-ref', help='Path to the config file')
+    parser.add_argument('-ref', help='Path to the ref')
     parser.add_argument('-i', help='Input file name')
     parser.add_argument('-o', help='Output path name')
     parser.add_argument('-cfg', help='Path to the config file')
     parser.add_argument('-name', help='Name of the output file')
 
     args = parser.parse_args()
-
     ref_image_name_path = args.ref
     image_name_path = args.i
     output_path_name = args.o
@@ -105,5 +106,5 @@ if __name__ == "__main__":
     name = args.name
     config_dico = get_config_dict(config_file)
     print("Calculating PSNR ...")
-    calc_psnr(config_dico, config_dico['RLC_ref_path'], image_name_path, output_path_name, name)
+    calc_psnr(config_dico, ref_image_name_path, image_name_path, output_path_name, name)
 

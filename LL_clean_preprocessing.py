@@ -96,7 +96,7 @@ def make_preprocessing(config_dico, output_filename):
     offset, lens, alpha, Lens_base_Yx, Lens_base_Yy = xml_reader(calibFile)
 
     # Read input image
-    raw_image = Image.open(config_dico['filename_rgb_in'])
+    raw_image = Image.open(config_dico['dataset_path'])
     image_rgb = raw_image.convert('RGB')
 
 
