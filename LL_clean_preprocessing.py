@@ -84,7 +84,7 @@ def distFromCenterXringYborderLogScale(rad,ring, border):
 
     return patch_mask
 
-def make_preprocessing(config_dico, output_filename):
+def make_preprocessing(config_dico, input , output_filename):
     calibFile = config_dico['camera_calibration_file']
     rad = config_dico['rad']
     diam = 2*rad + 1
@@ -96,7 +96,7 @@ def make_preprocessing(config_dico, output_filename):
     offset, lens, alpha, Lens_base_Yx, Lens_base_Yy = xml_reader(calibFile)
 
     # Read input image
-    raw_image = Image.open(config_dico['dataset_path'])
+    raw_image = Image.open(input)
     image_rgb = raw_image.convert('RGB')
 
 
@@ -227,13 +227,13 @@ def make_preprocessing(config_dico, output_filename):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-cfg', help='Path to the config file')
-    parser.add_argument('-o', help='Output path name')
+    parser.add_argument('-o', help='Output file name')
     parser.add_argument('-i', help='Input file name')
     args = parser.parse_args()
 
     input_file = args.i
     config_file = args.cfg
-    output_path_name = args.o
+    output_file_name = args.o
     
     if config_file is None:
         config_dico = {}
@@ -263,6 +263,6 @@ if __name__ == '__main__':
     
     else :
         config_dico = get_config_dict(config_file)
-        output_name = output_path_name
+        output_name = output_file_name
 
-    make_preprocessing(config_dico, output_name)
+    make_preprocessing(config_dico, input_file, output_name)
