@@ -81,6 +81,7 @@ def pre_processing_line(config_dico):
         # ______________ VTM ______________
         # WATCHOUT vtm only takes yuv420p and outputs only yuv420p10le
         vtm_output_yuv = f"{config_dico['preproc_line']}compressed_yuv_qp{qp}.yuv"
+        bitstream_file = f"{config_dico['preproc_line']}bitstream_qp{qp}.bin"
         vtm_command = (f"{config_dico['vtm_path']}EncoderApp "
                     f"-i {uncompressed_yuv_vid} "
                     f"-q {qp} "
@@ -89,35 +90,35 @@ def pre_processing_line(config_dico):
                     f"-c {config_dico['vtm_config_file']} "
                     f"-f {config_dico['frames_to_convert']} "
                     f"-fr {config_dico['framerate']} "
-                    f"-o {vtm_output_yuv} > {config_dico['preproc_line']}vtm_out_qp{qp}.txt"
+                    f"-o {vtm_output_yuv} "
+                    f"-b {bitstream_file} > {config_dico['preproc_line']}vtm_out_qp{qp}.txt"
         )
         subprocess.run(vtm_command, shell=True)
+    
+        if not config_dico['break_after_vtm'] :
+            # ______________ FFmpeg2 : yuv420p10le video -> png frames _____________
+            out_dir_name = config_dico['preproc_line'] + "compressed_rgb_qp" + str(qp) + "/"
+            os.makedirs(out_dir_name, exist_ok=True)
+            vtm_output_rgb = out_dir_name + "frame%03d.png" #here it's for the output of ffmpeg2  
+            ffmpeg_command2 = (
+                f"ffmpeg -s {config_dico['width']}x{config_dico['height']} "
+                f"-pix_fmt yuv420p10le "
+                f"-i {vtm_output_yuv} "
+                f"-vframes {config_dico['frames_to_convert']} "
+                f"-f image2 "
+                f"{vtm_output_rgb}"
+            )
+            subprocess.run(ffmpeg_command2, shell=True)
 
-        # ______________ FFmpeg2 : yuv420p10le video -> png frames _____________
-        out_dir_name = config_dico['preproc_line'] + "compressed_rgb_qp" + str(qp) + "/"
-        os.makedirs(out_dir_name, exist_ok=True)
-        vtm_output_rgb = out_dir_name + "frame%03d.png" #here it's for the output of ffmpeg2  
-        ffmpeg_command2 = (
-            f"ffmpeg -s {config_dico['width']}x{config_dico['height']} "
-            f"-pix_fmt yuv420p10le "
-            f"-i {vtm_output_yuv} "
-            # f"-vf \"scale={config_dico['width']}:{config_dico['height']},format=yuv420p10le\" "
-            f"-vframes {config_dico['frames_to_convert']} "
-            f"-f image2 "
-            f"{vtm_output_rgb}"
-        )
-        subprocess.run(ffmpeg_command2, shell=True)
-
-
-        # ______________ RLC ______________
-        if (config_dico['generate_rlc_cfg'] == 'true') :
-            no_preproc_RLC_config_name = f"{config_dico['preproc_line']}RLC_config.cfg"
-            os.makedirs(config_dico['RLC_preproc_path']+f"qp{qp}", exist_ok=True)
-            generate_RLC_config(config_dico, no_preproc_RLC_config_name, vtm_output_rgb, config_dico['RLC_preproc_path']+f"qp{qp}/Res_%03d")
-        else : no_preproc_RLC_config_name = config_dico['RLC_config_file']
-        
-        RLC_command = f"{config_dico['RLC_path']} {no_preproc_RLC_config_name}"
-        subprocess.run(RLC_command, shell=True)
+            # ______________ RLC ______________
+            if (config_dico['generate_rlc_cfg'] == 'true') :
+                no_preproc_RLC_config_name = f"{config_dico['preproc_line']}RLC_config.cfg"
+                os.makedirs(config_dico['RLC_preproc_path']+f"qp{qp}", exist_ok=True)
+                generate_RLC_config(config_dico, no_preproc_RLC_config_name, vtm_output_rgb, config_dico['RLC_preproc_path']+f"qp{qp}/Res_%03d")
+            else : no_preproc_RLC_config_name = config_dico['RLC_config_file']
+            
+            RLC_command = f"{config_dico['RLC_path']} {no_preproc_RLC_config_name}"
+            subprocess.run(RLC_command, shell=True)
 
 
 def no_pre_processing_line(config_dico):
@@ -141,6 +142,7 @@ def no_pre_processing_line(config_dico):
         # ______________ VTM ______________
         # WATCHOUT vtm only takes yuv420p and outputs only yuv420p10le
         vtm_output_yuv = f"{config_dico['no_preproc_line']}compressed_yuv_qp{qp}.yuv"
+        bitstream_file = f"{config_dico['no_preproc_line']}bitstream_qp{qp}.bin"
         vtm_command = (f"{config_dico['vtm_path']}EncoderApp "
                     f"-i {uncompressed_yuv_vid} "
                     f"-q {qp} "
@@ -149,33 +151,34 @@ def no_pre_processing_line(config_dico):
                     f"-c {config_dico['vtm_config_file']} "
                     f"-f {config_dico['frames_to_convert']} "
                     f"-fr {config_dico['framerate']} "
-                    f"-o {vtm_output_yuv} > {config_dico['no_preproc_line']}vtm_out_qp{qp}.txt"
+                    f"-o {vtm_output_yuv} "
+                    f"-b {bitstream_file} > {config_dico['no_preproc_line']}vtm_out_qp{qp}.txt"
         )
         subprocess.run(vtm_command, shell=True)
 
-        # ______________ FFmpeg2 : yuv420p10le video -> png frames _____________
-        out_dir_name = config_dico['no_preproc_line'] + "compressed_rgb_qp" + str(qp) + "/"
-        os.makedirs(out_dir_name, exist_ok=True)
-        vtm_output_rgb = out_dir_name + "frame%03d.png"
-        ffmpeg_command2 = (
-            f"ffmpeg -s {config_dico['width']}x{config_dico['height']} "
-            f"-pix_fmt yuv420p10le "
-            f"-i {vtm_output_yuv} "
-            f"-vframes {config_dico['frames_to_convert']} "
-            f"-f image2 "
-            f"{vtm_output_rgb}"
-        )
-        subprocess.run(ffmpeg_command2, shell=True)
-
-        # ______________ RLC ______________
-        if (config_dico['generate_rlc_cfg'] == 'true') :
-            no_preproc_RLC_config_name = f"{config_dico['no_preproc_line']}RLC_config.cfg"
-            os.makedirs(config_dico['RLC_no_preproc_path']+f"qp{qp}", exist_ok=True)
-            generate_RLC_config(config_dico, no_preproc_RLC_config_name, vtm_output_rgb, config_dico['RLC_no_preproc_path']+f"qp{qp}/Res_%03d")
-        else : no_preproc_RLC_config_name = config_dico['RLC_config_file']
-        
-        RLC_command = f"{config_dico['RLC_path']} {no_preproc_RLC_config_name}"
-        subprocess.run(RLC_command, shell=True)
+        if not config_dico['break_after_vtm'] :
+            # ______________ FFmpeg2 : yuv420p10le video -> png frames _____________
+            out_dir_name = config_dico['no_preproc_line'] + "compressed_rgb_qp" + str(qp) + "/"
+            os.makedirs(out_dir_name, exist_ok=True)
+            vtm_output_rgb = out_dir_name + "frame%03d.png"
+            ffmpeg_command2 = (
+                f"ffmpeg -s {config_dico['width']}x{config_dico['height']} "
+                f"-pix_fmt yuv420p10le "
+                f"-i {vtm_output_yuv} "
+                f"-vframes {config_dico['frames_to_convert']} "
+                f"-f image2 "
+                f"{vtm_output_rgb}"
+            )
+            subprocess.run(ffmpeg_command2, shell=True)
+            
+            # ______________ RLC ______________
+            if (config_dico['generate_rlc_cfg'] == 'true') :
+                no_preproc_RLC_config_name = f"{config_dico['no_preproc_line']}RLC_config.cfg"
+                os.makedirs(config_dico['RLC_no_preproc_path']+f"qp{qp}", exist_ok=True)
+                generate_RLC_config(config_dico, no_preproc_RLC_config_name, vtm_output_rgb, config_dico['RLC_no_preproc_path']+f"qp{qp}/Res_%03d")
+            else : no_preproc_RLC_config_name = config_dico['RLC_config_file']
+            RLC_command = f"{config_dico['RLC_path']} {no_preproc_RLC_config_name}"
+            subprocess.run(RLC_command, shell=True)
 
 
 def calculate_psnr(config_dico):
@@ -193,12 +196,13 @@ if __name__ == '__main__':
 
     config_filename = sys.argv[1]
     config_dico = get_config_dict(config_filename)
-
     create_output_dirs(config_dico)
+
     # ______________ Running the lines ______________
     rlc_line(config_dico)
     pre_processing_line(config_dico)
     no_pre_processing_line(config_dico)
 
     # ______________ PSNR ______________
-    calculate_psnr(config_dico)
+    if not config_dico['break_after_vtm'] :
+        calculate_psnr(config_dico)

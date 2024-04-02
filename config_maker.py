@@ -18,6 +18,7 @@ def get_config_dict(filename):
             # ______________ DEFAULT ______________
             dico['dataset_path'] = str(config['DEFAULT']['dataset_path'])
             dico['output_path'] = config['DEFAULT']['output_path']
+            dico['break_after_vtm'] = config['DEFAULT']['break_after_vtm'].lower()
 
             dico['framerate'] = config['DEFAULT']['framerate']
             dico['width'] = config['DEFAULT']['width']
