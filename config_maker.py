@@ -33,6 +33,7 @@ def get_config_dict(filename):
             dico['pre_processing_path'] = config['APP_PATHS']['pre_processing_path']
             dico['RLC_path'] = config['APP_PATHS']['RLC_path']
             dico['psnr_path'] = config['APP_PATHS']['psnr_path']
+            dico['post_processing_path'] = config['APP_PATHS']['post_processing_path']
 
             # ______________ RLC ______________
             dico['RLC_config_file'] = config['RLC']['RLC_config_file']
@@ -43,12 +44,15 @@ def get_config_dict(filename):
             dico['no_preproc_line'] = dico['output_path'] + "no_preproc_line/"
             dico['preproc_line'] = dico['output_path'] + "preproc_line/"
             dico['ref_rlc_line'] = dico['output_path'] + "ref_rlc_line/"
-                # Output directories for RLC multiview images 
-            dico['RLC_ref_path'] = dico['output_path'] + "ref_rlc_multiview/"
-            dico['RLC_no_preproc_path'] = dico['output_path'] + "no_preproc_rlc_multiview/"
-            dico['RLC_preproc_path'] = dico['output_path'] + "preproc_rlc_multiview/"
+            dico['postproc_line'] = dico['output_path'] + "postproc_line/"
 
-            return dico
+                # Output directories for RLC multiview images 
+            dico['ref_rlc_multiview'] = dico['output_path'] + "ref_rlc_multiview/"
+            dico['no_preproc_rlc_multiview'] = dico['output_path'] + "no_preproc_rlc_multiview/"
+            dico['preproc_rlc_multiview'] = dico['output_path'] + "preproc_rlc_multiview/"
+            dico['postproc_rlc_multiview'] = dico['output_path'] + "postproc_rlc_multiview/"
+
+            return dico 
     except FileNotFoundError:
         print(f"File '{filename}' not found.")
     except:
