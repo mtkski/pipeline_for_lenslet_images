@@ -22,11 +22,10 @@ def get_config_dict(filename):
             dico['framerate'] = config['DEFAULT']['framerate']
             dico['width'] = config['DEFAULT']['width']
             dico['height'] = config['DEFAULT']['height']
-            # dico['pix_fmt'] = config['DEFAULT']['pix_fmt']
 
             # ______________ VTM ______________
             dico['vtm_config_file'] = config['VTM']['vtm_config_file']
-            dico['qp'] = config['VTM']['qp']
+            dico['qp_list'] = [int(x) for x in config['VTM']['qp_list'].split(',')]
             
             # ______________ APP PATHS ______________
             dico['vtm_path'] = config['APP_PATHS']['vtm_path']
