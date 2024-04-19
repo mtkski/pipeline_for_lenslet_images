@@ -144,8 +144,8 @@ def run_RLC(config_dico, line_dir, input_dir, out_dir):
 def calculate_psnr(config_dico):
     for i in range(1, int(config_dico['frames_to_convert'])+1):
         for qp in config_dico['qp_list']:
-            psnr_command_no_preproc = f"python3 {config_dico['psnr_path']} -ref {config_dico['RLC_ref_path']}Res_{i:03d}/ -i {config_dico['RLC_no_preproc_path']}qp{qp}/Res_{i:03d}/ -o {config_dico['RLC_no_preproc_path']}qp{qp}/ -cfg {config_filename} -name no_preproc_qp{qp}_{i:03d}"
-            psnr_command_preproc =    f"python3 {config_dico['psnr_path']} -ref {config_dico['RLC_ref_path']}Res_{i:03d}/ -i {config_dico['RLC_preproc_path']}qp{qp}/Res_{i:03d}/    -o {config_dico['RLC_preproc_path']}qp{qp}/    -cfg {config_filename} -name preproc_qp{qp}_{i:03d}"
+            psnr_command_no_preproc = f"python3 {config_dico['psnr_path']} -ref {config_dico['ref_rlc_multiview']}Res_{i:03d}/ -i {config_dico['no_preproc_rlc_multiview']}qp{qp}/Res_{i:03d}/ -o {config_dico['no_preproc_rlc_multiview']}qp{qp}/ -cfg {config_filename} -name no_preproc_qp{qp}_{i:03d}"
+            psnr_command_preproc =    f"python3 {config_dico['psnr_path']} -ref {config_dico['ref_rlc_multiview']}Res_{i:03d}/ -i {config_dico['preproc_rlc_multiview']}qp{qp}/Res_{i:03d}/    -o {config_dico['preproc_rlc_multiview']}qp{qp}/    -cfg {config_filename} -name preproc_qp{qp}_{i:03d}"
             subprocess.run(psnr_command_no_preproc, shell=True)
             subprocess.run(psnr_command_preproc, shell=True)
 
@@ -160,14 +160,15 @@ if __name__ == '__main__':
     create_output_dirs(config_dico)
 
     # ______________ Running the lines ______________
-    rlc_ref_line(config_dico)
+    # rlc_ref_line(config_dico)
 
-    no_pre_proc_line(config_dico)
+    # no_pre_proc_line(config_dico)
 
     pre_proc_line(config_dico)
+    print("Pre processing done")
 
-    post_proc_line(config_dico) # pour l'instant ne fais rien du tout (run un script bidon post.py et run RLC comme les autres lignes)
+    # post_proc_line(config_dico) # pour l'instant ne fais rien du tout (run un script bidon post.py et run RLC comme les autres lignes)
 
     # ______________ PSNR ______________
-    if not config_dico['break_after_vtm'] :
-        calculate_psnr(config_dico)
+    # if config_dico['break_after_vtm'] != True :
+        # calculate_psnr(config_dico)
